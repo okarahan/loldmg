@@ -22,17 +22,18 @@ var staticFS embed.FS
 type Server struct {
 	apiKey string
 	region string
+	devPath string
 }
 
 // New creates a web server with default Riot API config.
-func New(apiKey, region string) *Server {
+func New(apiKey, region, devPath string) *Server {
 	if apiKey == "" {
 		apiKey = os.Getenv("RIOT_API_KEY")
 	}
 	if region == "" {
 		region = "europe"
 	}
-	return &Server{apiKey: apiKey, region: region}
+	return &Server{apiKey: apiKey, region: region, devPath: devPath}
 }
 
 // Handler returns the HTTP mux.
@@ -49,6 +50,10 @@ func (s *Server) Handler() http.Handler {
 }
 
 func (s *Server) handleAnalyze(w http.ResponseWriter, r *http.Request) {
+	if s.devPath != "" {
+		s.handleDevAnalyze(w, r)
+		return
+	}
 	matchID := r.URL.Query().Get("match_id")
 	region := r.URL.Query().Get("region")
 	if region == "" {
@@ -92,6 +97,45 @@ func (s *Server) handleAnalyze(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(resp)
+}
+
+func (s *Server) handleDevAnalyze(w http.ResponseWriter, r *http.Request) {
+	tlPath := s.devPath + "/timeline.json"
+	matchPath := s.devPath + "/match.json"
+	tlFile, err := os.ReadFile(tlPath)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error":"timeline file: %s"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+	matchFile, err := os.ReadFile(matchPath)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error":"match file: %s"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+	var tl models.Timeline
+	if err := json.Unmarshal(tlFile, &tl); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error":"parse timeline: %s"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+	var info models.MatchInfo
+	_ = json.Unmarshal(matchFile, &info)
+
+	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
+	defer cancel()
+
+	fights, err := analyzer.New().DetectFights(ctx, &tl)
+	if err != nil {
+		http.Error(w, fmt.Sprintf(`{"error":"analyze: %s"}`, err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(analyzeResponse{
+		MatchID: "dev-match",
+		Region:  s.region,
+		Fights:  fights,
+		Info:    &info,
+	})
 }
 
 type analyzeResponse struct {
