@@ -11,8 +11,8 @@ FROM alpine:3.20
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
 COPY --from=builder /app/loldmg-server .
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
+RUN addgroup -S -g 1000 appgroup && adduser -S -u 1000 -G appgroup appuser
+USER 1000:1000
 EXPOSE 8080
 ENTRYPOINT ["./loldmg-server"]
 CMD ["-addr=:8080"]
