@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>loldmg — fight timeline</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>loldmg</h1>
+    <form id="search">
+      <input type="text" id="matchId" placeholder="Match ID (e.g. EUW1_8035563778)" required>
+      <select id="region">
+        <option value="europe">Europe</option>
+        <option value="americas">Americas</option>
+        <option value="asia">Asia</option>
+        <option value="sea">SEA</option>
+        <option value="esports">Esports</option>
+      </select>
+      <button type="submit">Analyze</button>
+    </form>
+    <div id="error" class="error hidden"></div>
+    <div id="loading" class="loading hidden">Loading match timeline…</div>
+
+    <div id="timelineWrap" class="hidden">
+      <h2>Timeline</h2>
+      <p class="hint">Red intensity = kill density. Icons = objectives. Click a fight to open damage meter.</p>
+      <div id="timeline" class="timeline"></div>
+      <div id="fightPanel" class="fight-panel hidden">
+        <h3 id="fightTitle"></h3>
+        <div id="fightMeter"></div>
+      </div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

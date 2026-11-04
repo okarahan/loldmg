@@ -1,0 +1,11 @@
+{
+  "info": {
+    "participants": [
+      {"participantId": 1, "puuid": "p1", "riotIdGameName": "Player1", "riotIdTagline": "EUW", "championName": "Ahri", "teamId": 100},
+      {"participantId": 2, "puuid": "p2", "riotIdGameName": "Player2", "riotIdTagline": "EUW", "championName": "Garen", "teamId": 100},
+      {"participantId": 3, "puuid": "p3", "riotIdGameName": "Player3", "riotIdTagline": "EUW", "championName": "Jinx", "teamId": 100},
+      {"participantId": 5, "puuid": "p5", "riotIdGameName": "Enemy5", "championName": "Darius", "teamId": 200},
+      {"participantId": 6, "puuid": "p6", "summonerName": "Enemy6", "championName": "Lux", "teamId": 200}
+    ]
+  }
+}

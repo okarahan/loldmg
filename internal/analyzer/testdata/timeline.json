@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "dataVersion": "2",
+    "matchId": "TEST_1",
+    "participants": ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10"]
+  },
+  "info": {
+    "frameInterval": 60000,
+    "frames": [
+      {
+        "timestamp": 0,
+        "events": [
+          {
+            "type": "CHAMPION_KILL",
+            "timestamp": 60000,
+            "killerId": 1,
+            "victimId": 5,
+            "assistingParticipantIds": [2],
+            "victimDamageReceived": [
+              {"participantId": 1, "magicDamage": 200, "physicalDamage": 300, "trueDamage": 0},
+              {"participantId": 2, "magicDamage": 100, "physicalDamage": 0, "trueDamage": 50}
+            ]
+          },
+          {
+            "type": "CHAMPION_KILL",
+            "timestamp": 65000,
+            "killerId": 1,
+            "victimId": 6,
+            "assistingParticipantIds": [3],
+            "victimDamageReceived": [
+              {"participantId": 1, "magicDamage": 0, "physicalDamage": 400, "trueDamage": 100},
+              {"participantId": 3, "magicDamage": 150, "physicalDamage": 0, "trueDamage": 0}
+            ]
+          },
+          {
+            "type": "ELITE_MONSTER_KILL",
+            "timestamp": 66000,
+            "killerId": 1,
+            "monsterType": "DRAGON"
+          }
+        ],
+        "participantFrames": {}
+      },
+      {
+        "timestamp": 60000,
+        "events": [
+          {
+            "type": "CHAMPION_KILL",
+            "timestamp": 180000,
+            "killerId": 5,
+            "victimId": 1,
+            "victimDamageReceived": [
+              {"participantId": 5, "magicDamage": 0, "physicalDamage": 250, "trueDamage": 0}
+            ]
+          }
+        ],
+        "participantFrames": {}
+      }
+    ]
+  }
+}
