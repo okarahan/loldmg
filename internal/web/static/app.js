@@ -55,61 +55,33 @@ function renderTimeline(data) {
     return;
   }
 
-  const start = Math.min(...data.fights.map(f => f.start_ms));
-  const end = Math.max(...data.fights.map(f => f.end_ms));
-  const duration = Math.max(end - start, 1);
-
-  // Kill density buckets
-  const buckets = 60;
-  const kills = [];
-  data.fights.forEach(f => f.kill_events.forEach(k => kills.push(k.timestamp)));
-  const bucketCounts = new Array(buckets).fill(0);
-  kills.forEach(t => {
-    const idx = Math.min(buckets - 1, Math.floor(((t - start) / duration) * buckets));
-    bucketCounts[idx]++;
-  });
-  const maxCount = Math.max(1, ...bucketCounts);
-
-  bucketCounts.forEach((count, i) => {
-    const div = document.createElement('div');
-    div.className = 'timeline-bucket';
-    div.style.left = `${(i / buckets) * 100}%`;
-    div.style.width = `${100 / buckets}%`;
-    div.style.background = `rgba(239, 68, 68, ${count / maxCount * 0.7})`;
-    timeline.appendChild(div);
-  });
-
-  // Objective markers from fight labels and kill events
-  const objectives = [];
-  data.fights.forEach(f => {
-    f.kill_events.forEach(k => {
-      if (k.type === 'ELITE_MONSTER_KILL') {
-        objectives.push({ t: k.timestamp, kind: monsterKind(k.monster_type) });
-      } else if (k.type === 'BUILDING_KILL') {
-        objectives.push({ t: k.timestamp, kind: buildingKind(k.building_type) });
-      }
-    });
-  });
-  objectives.forEach(o => {
-    const div = document.createElement('div');
-    div.className = `timeline-objective ${o.kind.class}`;
-    div.style.left = `${((o.t - start) / duration) * 100}%`;
-    div.title = o.kind.label;
-    div.textContent = o.kind.short;
-    timeline.appendChild(div);
-  });
-
-  // Fight blocks
   data.fights.forEach((f, idx) => {
-    const div = document.createElement('div');
-    div.className = 'timeline-fight';
-    div.style.left = `${((f.start_ms - start) / duration) * 100}%`;
-    div.style.width = `${Math.max(1, (f.end_ms - f.start_ms) / duration * 100)}%`;
-    div.textContent = f.label || 'Fight';
-    const fKills = f.kill_events ? f.kill_events.length : 0;
-    div.title = `${formatTime(f.start_ms)} - ${formatTime(f.end_ms)} | ${fKills} kill${fKills === 1 ? '' : 's'}`;
-    div.addEventListener('click', () => showFight(f, idx, data.info));
-    timeline.appendChild(div);
+    const kills = f.kill_events ? f.kill_events.length : 0;
+    const card = document.createElement('div');
+    card.className = 'fight-card';
+
+    const header = document.createElement('div');
+    header.className = 'fight-card-header';
+    header.textContent = `Fight ${idx + 1}`;
+    card.appendChild(header);
+
+    const body = document.createElement('div');
+    body.className = 'fight-card-body';
+    body.textContent = f.label || 'Skirmish';
+    card.appendChild(body);
+
+    const footer = document.createElement('div');
+    footer.className = 'fight-card-footer';
+    footer.textContent = `${kills} kill${kills === 1 ? '' : 's'}`;
+    card.appendChild(footer);
+
+    card.title = `${f.label || 'Skirmish'}\n${formatTime(f.start_ms)} - ${formatTime(f.end_ms)} (${f.duration_ms / 1000}s)\n${kills} kill${kills === 1 ? '' : 's'}`;
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.fight-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      showFight(f, idx, data.info);
+    });
+    timeline.appendChild(card);
   });
 }
 
