@@ -4,13 +4,29 @@ League of Legends fight analyzer.
 
 ## Web UI
 
-The web app shows an interactive timeline with kill density, objective markers, and a damage meter per fight.
+The web app shows fights as a row of cards. Hover a card to see game time and duration; click it to open the damage meter.
 
 ```bash
 RIOT_API_KEY=RGAPI-xxx go run ./cmd/server -addr=:8080
 ```
 
 Open http://localhost:8080 and paste a match ID.
+
+### Demo mode
+
+No Riot API key needed — type `demo` as the match ID to load built-in sample data:
+
+```bash
+go run ./cmd/server -addr=:8080
+```
+
+Then enter `demo` and click Analyze.
+
+### Local development with sample files
+
+```bash
+go run ./cmd/server -addr=:8080 -dev=internal/analyzer/testdata
+```
 
 ## Docker
 
