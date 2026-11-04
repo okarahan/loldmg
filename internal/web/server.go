@@ -50,11 +50,11 @@ func (s *Server) Handler() http.Handler {
 }
 
 func (s *Server) handleAnalyze(w http.ResponseWriter, r *http.Request) {
-	if s.devPath != "" {
-		s.handleDevAnalyze(w, r)
+	matchID := r.URL.Query().Get("match_id")
+	if matchID == "demo" || s.devPath != "" {
+		s.handleDemoAnalyze(w, r)
 		return
 	}
-	matchID := r.URL.Query().Get("match_id")
 	region := r.URL.Query().Get("region")
 	if region == "" {
 		region = s.region
@@ -99,9 +99,13 @@ func (s *Server) handleAnalyze(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(resp)
 }
 
-func (s *Server) handleDevAnalyze(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleDemoAnalyze(w http.ResponseWriter, r *http.Request) {
 	tlPath := s.devPath + "/timeline.json"
 	matchPath := s.devPath + "/match.json"
+	if s.devPath == "" {
+		tlPath = "internal/analyzer/testdata/timeline.json"
+		matchPath = "internal/analyzer/testdata/match.json"
+	}
 	tlFile, err := os.ReadFile(tlPath)
 	if err != nil {
 		http.Error(w, fmt.Sprintf(`{"error":"timeline file: %s"}`, err.Error()), http.StatusInternalServerError)
