@@ -29,7 +29,7 @@ kubectl apply -f kubernetes/apps/loldmg/secret.example.yaml
 kubectl apply -k kubernetes/apps/loldmg
 ```
 
-The app is exposed at `https://loldmg.okarahan.home.arpa` (via Traefik Gateway API HTTPRoute). Add a private DNS entry or `/etc/hosts` line pointing `loldmg.okarahan.home.arpa` to your cluster ingress IP.
+The app is exposed at `https://loldmg.home.okarahan.arpa` (via Traefik Gateway API HTTPRoute). Add a private DNS entry or `/etc/hosts` line pointing `loldmg.home.okarahan.arpa` to your cluster ingress IP.
 
 Flux ImageUpdateAutomation in `kubernetes/sources/loldmg-imageupdateautomation.yaml` keeps the deployment image pinned to the latest `main-<sha>` tag pushed by CI.
 
