@@ -106,7 +106,8 @@ function renderTimeline(data) {
     div.style.left = `${((f.start_ms - start) / duration) * 100}%`;
     div.style.width = `${Math.max(1, (f.end_ms - f.start_ms) / duration * 100)}%`;
     div.textContent = f.label || 'Fight';
-    div.title = `${formatTime(f.start_ms)} - ${formatTime(f.end_ms)} | ${f.kills} kill(s)`;
+    const fKills = f.kill_events ? f.kill_events.length : 0;
+    div.title = `${formatTime(f.start_ms)} - ${formatTime(f.end_ms)} | ${fKills} kill${fKills === 1 ? '' : 's'}`;
     div.addEventListener('click', () => showFight(f, idx, data.info));
     timeline.appendChild(div);
   });
@@ -133,7 +134,8 @@ function buildingKind(type) {
 
 function showFight(fight, idx, info) {
   fightPanel.classList.remove('hidden');
-  fightTitle.textContent = `Fight ${idx + 1} — ${fight.label || 'Skirmish'} @ ${formatTime(fight.start_ms)} - ${formatTime(fight.end_ms)} (${fight.kills} kills)`;
+  const kills = fight.kill_events ? fight.kill_events.length : 0;
+  fightTitle.textContent = `Fight ${idx + 1} — ${fight.label || 'Skirmish'} @ ${formatTime(fight.start_ms)} - ${formatTime(fight.end_ms)} (${kills} kill${kills === 1 ? '' : 's'})`;
   fightMeter.innerHTML = '';
 
   const identities = {};
@@ -143,13 +145,15 @@ function showFight(fight, idx, info) {
     });
   }
 
-  const entries = Object.entries(fight.damage)
-    .map(([pid, dmg]) => {
-      const id = parseInt(pid, 10);
-      const name = identities[id] || `P${pid}`;
-      const kills = (fight.kills_by_player[pid] || 0);
-      const assists = (fight.assists_by_player[pid] || 0);
-      const deaths = (fight.deaths_by_player[pid] || 0);
+  const entries = fight.participants
+    .map(pid => {
+      const id = pid;
+      const pidStr = String(pid);
+      const name = identities[id] || `P${pidStr}`;
+      const dmg = (fight.damage_by_participant[pidStr] || 0);
+      const kills = (fight.kills_by_participant[pidStr] || 0);
+      const assists = (fight.assists_by_participant[pidStr] || 0);
+      const deaths = (fight.deaths_by_participant[pidStr] || 0);
       return { id, name, dmg, kda: `${kills}/${deaths}/${assists}` };
     })
     .sort((a, b) => b.dmg - a.dmg);
